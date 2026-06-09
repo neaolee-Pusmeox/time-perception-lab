@@ -4,174 +4,326 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
   <title>时间感校准实验室</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&family=Noto+Serif+SC:wght@400;700&display=swap" rel="stylesheet">
   <style>
+:root {
+      --bg: #f5f2ed;
+      --bg-card: #ffffff;
+      --text-primary: #1a1a1a;
+      --text-secondary: #6b6b6b;
+      --text-muted: #a0a0a0;
+      --accent: #1a1a1a;
+      --border: #e0dcd6;
+      --serif: 'Noto Serif SC', 'Playfair Display', Georgia, serif;
+      --sans: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang SC', sans-serif;
+    }
     * { margin: 0; padding: 0; box-sizing: border-box; }
     html, body {
       width: 100%; height: 100%;
       overflow: hidden;
       overscroll-behavior: none;
       touch-action: manipulation;
-      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang SC', 'Hiragino Sans GB', sans-serif;
-      background: #0a0a0f;
-      color: #e0e0e0;
+      font-family: var(--sans);
+      background: var(--bg);
+      color: var(--text-primary);
     }
-    canvas#particle-canvas {
+
+    /* Canvas 背景 */
+    canvas#anim-canvas {
       position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-      z-index: 0;
+      z-index: 0; pointer-events: none;
     }
+
+    /* 页面容器 */
     .page {
       position: fixed; top: 0; left: 0; width: 100%; height: 100%;
       display: flex; flex-direction: column; align-items: center; justify-content: center;
-      z-index: 10; padding: 24px;
+      z-index: 10; padding: 40px 24px;
       opacity: 0; pointer-events: none;
-      transition: opacity 0.6s ease;
+      transform: translateY(20px);
+      transition: opacity 0.8s cubic-bezier(0.4, 0, 0.2, 1), transform 0.8s cubic-bezier(0.4, 0, 0.2, 1);
     }
-    .page.active { opacity: 1; pointer-events: auto; }
-    .page h1 {
-      font-size: 28px; font-weight: 700; text-align: center;
-      margin-bottom: 16px; line-height: 1.4;
+    .page.active {
+      opacity: 1; pointer-events: auto; transform: translateY(0);
     }
-    .page p {
-      font-size: 16px; color: #a0a0b0; text-align: center;
-      line-height: 1.6; max-width: 320px;
+    .page.exit {
+      opacity: 0; transform: translateY(-20px);
     }
+
+    /* 排版 */
+    .title-lg {
+      font-family: var(--serif);
+      font-size: clamp(32px, 8vw, 48px);
+      font-weight: 700; line-height: 1.3;
+      text-align: center; letter-spacing: -0.02em;
+    }
+    .subtitle {
+      font-size: 15px; color: var(--text-secondary);
+      text-align: center; margin-top: 12px; line-height: 1.6;
+      max-width: 280px;
+    }
+    .label {
+      font-size: 11px; color: var(--text-muted);
+      text-transform: uppercase; letter-spacing: 3px;
+      margin-bottom: 8px;
+    }
+
+    /* 按钮 */
     .btn {
-      margin-top: 40px; padding: 14px 36px;
-      background: rgba(255,255,255,0.08); border: 1px solid rgba(255,255,255,0.2);
-      border-radius: 40px; color: #fff; font-size: 16px;
-      cursor: pointer; transition: all 0.3s;
-      backdrop-filter: blur(4px);
+      margin-top: 48px; padding: 16px 40px;
+      background: var(--accent); color: #fff;
+      border: none; border-radius: 0;
+      font-size: 14px; font-family: var(--sans);
+      letter-spacing: 1px; cursor: pointer;
+      transition: all 0.3s;
     }
-    .btn:hover { background: rgba(255,255,255,0.15); border-color: rgba(255,255,255,0.4); }
-    .btn:active { transform: scale(0.96); }
+    .btn:active { transform: scale(0.97); opacity: 0.8; }
+    .btn--ghost {
+      background: transparent; color: var(--text-primary);
+      border: 1px solid var(--border);
+    }
 
-    /* 说明页步骤 */
-    .steps { list-style: none; margin: 24px 0; max-width: 300px; }
-    .steps li {
-      position: relative; padding: 12px 0 12px 36px;
-      font-size: 15px; color: #c0c0d0; line-height: 1.5;
+    /* 分割线装饰 */
+    .divider {
+      width: 40px; height: 1px;
+      background: var(--border); margin: 24px auto;
     }
-    .steps li::before {
-      content: attr(data-step);
-      position: absolute; left: 0; top: 12px;
-      width: 24px; height: 24px; border-radius: 50%;
-      background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.3);
-      display: flex; align-items: center; justify-content: center;
-      font-size: 12px; color: #fff;
-    }
-    .hint { font-size: 13px !important; color: #606070 !important; margin-top: 20px; }
 
-    /* 测试页 */
-    .test-info { text-align: center; transition: opacity 0.5s; }
-    .test-info h2 { font-size: 22px; margin-bottom: 12px; font-weight: 600; }
-    .test-info .target-time { font-size: 48px; font-weight: 200; color: #fff; margin: 16px 0; }
-    .test-info .target-label { font-size: 14px; color: #808090; }
-    .tap-hint {
-      position: fixed; bottom: 60px; left: 0; width: 100%;
-      text-align: center; font-size: 13px; color: #505060;
-      opacity: 0; transition: opacity 0.5s;
+    /* === 落地页 === */
+    #page-landing .hero-number {
+      font-family: var(--serif);
+      font-size: clamp(80px, 20vw, 140px);
+      font-weight: 400; color: var(--text-muted);
+      opacity: 0.15; position: absolute;
+      top: 10%; right: 8%;
     }
-    .tap-hint.visible { opacity: 1; }
 
-    /* 单轮反馈 */
-    .feedback { text-align: center; }
-    .feedback .result-value { font-size: 42px; font-weight: 200; margin: 12px 0; }
-    .feedback .result-detail { font-size: 15px; color: #a0a0b0; margin: 8px 0; }
-    .feedback .result-comment { font-size: 14px; color: #707080; margin-top: 16px; font-style: italic; }
-
-    /* 结果页 */
-    #page-result { overflow-y: auto; justify-content: flex-start; padding-top: 60px; padding-bottom: 60px; }
-    .result-section { width: 100%; max-width: 360px; margin-bottom: 40px; text-align: center; }
-    .result-section h3 { font-size: 14px; color: #606070; text-transform: uppercase; letter-spacing: 2px; margin-bottom: 16px; }
-    .big-number { font-size: 56px; font-weight: 200; color: #fff; }
-    .big-number span { font-size: 24px; }
-    .sub-stat { font-size: 15px; color: #a0a0b0; margin-top: 8px; line-height: 1.6; }
-    .trend-chart { width: 100%; height: 80px; margin: 16px 0; }
-    .trend-label { font-size: 15px; color: #c0c0d0; font-weight: 500; }
-    .trend-desc { font-size: 13px; color: #707080; margin-top: 4px; }
-    .character-card {
-      background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.1);
-      border-radius: 16px; padding: 24px; margin-top: 16px;
+    /* === 说明页 === */
+    .rules { list-style: none; margin: 32px 0; max-width: 300px; }
+    .rules li {
+      padding: 16px 0; border-bottom: 1px solid var(--border);
+      font-size: 14px; color: var(--text-secondary); line-height: 1.6;
+      display: flex; gap: 16px; align-items: flex-start;
     }
-    .character-card .char-name { font-size: 22px; font-weight: 600; color: #fff; }
-    .character-card .char-tag { font-size: 13px; color: #a0a0b0; margin: 8px 0 16px; }
-    .character-card .char-desc { font-size: 14px; color: #b0b0c0; line-height: 1.7; text-align: left; }
-    .btn-group { display: flex; gap: 12px; margin-top: 32px; }
-    .btn-group .btn { padding: 12px 24px; font-size: 14px; }
+    .rules li .num {
+      font-family: var(--serif); font-size: 18px;
+      color: var(--text-primary); flex-shrink: 0;
+      width: 24px;
+    }
+
+    /* === 测试页 === */
+    #page-test { cursor: default; }
+    .test-ui { text-align: center; transition: opacity 0.6s; }
+    .test-ui .round-num {
+      font-family: var(--serif); font-size: 13px;
+      color: var(--text-muted); letter-spacing: 3px;
+      text-transform: uppercase;
+    }
+    .test-ui .target-seconds {
+      font-family: var(--serif);
+      font-size: clamp(72px, 18vw, 120px);
+      font-weight: 400; margin: 8px 0;
+      line-height: 1;
+    }
+    .test-ui .target-unit {
+      font-size: 14px; color: var(--text-secondary);
+    }
+    .tap-zone-hint {
+      position: fixed; bottom: 48px; left: 0; width: 100%;
+      text-align: center; font-size: 12px; color: var(--text-muted);
+      letter-spacing: 2px;
+      opacity: 0; transition: opacity 0.6s;
+    }
+    .tap-zone-hint.show { opacity: 1; }
+
+    /* === 反馈页 === */
+    .feedback-content { text-align: center; }
+    .feedback-content .elapsed {
+      font-family: var(--serif);
+      font-size: clamp(48px, 12vw, 72px);
+      font-weight: 400; margin: 8px 0;
+    }
+    .feedback-content .diff-info {
+      font-size: 14px; color: var(--text-secondary); margin: 4px 0;
+    }
+    .feedback-content .comment {
+      font-size: 13px; color: var(--text-muted);
+      margin-top: 16px; font-style: italic;
+    }
+
+    /* === 结果页 === */
+    #page-result {
+      justify-content: flex-start;
+      padding: 0; overflow-y: auto;
+    }
+    .result-card {
+      width: 100%; min-height: 100vh; max-width: 420px;
+      padding: 60px 32px 48px;
+      display: flex; flex-direction: column; align-items: center;
+      background: var(--bg);
+    }
+    .result-speed {
+      font-family: var(--serif);
+      font-size: clamp(56px, 14vw, 80px);
+      font-weight: 700; line-height: 1;
+      margin: 16px 0 4px;
+    }
+    .result-speed .unit { font-size: 0.4em; font-weight: 400; }
+    .result-equiv { font-size: 14px; color: var(--text-secondary); margin: 4px 0; }
+    .trend-section { width: 100%; margin: 32px 0; text-align: center; }
+    .trend-visual {
+      display: flex; justify-content: center; align-items: flex-end;
+      gap: 24px; height: 60px; margin: 16px 0;
+    }
+    .trend-bar {
+      width: 3px; background: var(--text-primary); border-radius: 2px;
+      position: relative;
+    }
+    .trend-bar::after {
+      content: attr(data-label);
+      position: absolute; bottom: -20px; left: 50%;
+      transform: translateX(-50%);
+      font-size: 10px; color: var(--text-muted); white-space: nowrap;
+    }
+    .trend-type { font-family: var(--serif); font-size: 18px; margin-top: 28px; }
+    .trend-desc { font-size: 13px; color: var(--text-secondary); margin-top: 4px; }
+
+    /* 人物区域 */
+    .character-section { width: 100%; margin-top: 32px; text-align: center; }
+    .char-portrait {
+      width: 120px; height: 120px; border-radius: 50%;
+      background: #d0ccc6; margin: 16px auto;
+      overflow: hidden; display: flex; align-items: center; justify-content: center;
+    }
+    .char-portrait img {
+      width: 100%; height: 100%; object-fit: cover;
+      filter: grayscale(1) contrast(1.1);
+    }
+    .char-portrait .placeholder {
+      font-size: 11px; color: var(--text-muted);
+    }
+    .char-name {
+      font-family: var(--serif); font-size: 24px; font-weight: 700;
+      margin-top: 12px;
+    }
+    .char-tag {
+      font-size: 13px; color: var(--text-secondary); margin: 4px 0 16px;
+    }
+    .char-desc {
+      font-size: 14px; color: var(--text-secondary);
+      line-height: 1.8; text-align: left;
+      max-width: 320px; margin: 0 auto;
+    }
+
+    /* 粒子聚合文字画布 */
+    #char-text-canvas {
+      width: 280px; height: 80px; margin: 24px auto 0;
+    }
+
+    /* 底部按钮 */
+    .result-actions {
+      display: flex; gap: 12px; margin-top: 40px; width: 100%;
+      max-width: 320px;
+    }
+    .result-actions .btn { flex: 1; text-align: center; padding: 14px; }
+
+    /* 水印 */
+    .watermark {
+      font-size: 10px; color: var(--text-muted);
+      margin-top: 32px; letter-spacing: 1px;
+    }
+
+    /* PC端适配 */
+    @media (min-width: 768px) {
+      .page { padding: 60px; }
+      .result-card { padding: 80px 48px 60px; }
+    }
   </style>
 </head>
 <body>
-  <canvas id="particle-canvas"></canvas>
+  <canvas id="anim-canvas"></canvas>
 
-  <!-- Page 1: 落地页 -->
+  <!-- 落地页 -->
   <div id="page-landing" class="page active">
-    <h1>你的内在时钟<br>偏了多少？</h1>
-    <p>闭上理性，用直觉感受时间的流逝</p>
-    <button class="btn" onclick="goToPage('intro')">进入校准实验室</button>
+    <div class="hero-number">?</div>
+    <div class="label">Time Perception Lab</div>
+    <h1 class="title-lg">你的内在时钟<br>偏了多少</h1>
+    <p class="subtitle">三轮感知测试，校准你与世界的时差</p>
+    <button class="btn" onclick="goToPage('intro')">开始校准</button>
   </div>
 
-  <!-- Page 2: 说明页 -->
+  <!-- 说明页 -->
   <div id="page-intro" class="page">
-    <h1>实验规则</h1>
-    <ol class="steps">
-      <li data-step="1">你会看到一段粒子动画，用直觉感受指定时长</li>
-      <li data-step="2">当你觉得"时间到了"，点击屏幕任意位置</li>
-      <li data-step="3">共三轮，每轮时长不同，测完揭晓你的时间人格</li>
-    </ol>
-    <p class="hint">建议佩戴耳机，保持安静环境</p>
-    <button class="btn" onclick="startTest()">准备好了，开始第一轮</button>
+    <div class="label">How It Works</div>
+    <h2 class="title-lg" style="font-size: clamp(24px, 6vw, 36px);">实验规则</h2>
+    <ul class="rules">
+      <li><span class="num">1</span><span>屏幕会给出目标秒数，用直觉感受时间流逝</span></li>
+      <li><span class="num">2</span><span>当你觉得"到了"，点击屏幕任意位置</span></li>
+      <li><span class="num">3</span><span>三轮不同时长，最终揭晓你的时间人格</span></li>
+    </ul>
+    <p class="subtitle" style="font-size:12px; color:var(--text-muted);">建议佩戴耳机 · 保持安静</p>
+    <button class="btn" onclick="startTest()">准备好了</button>
   </div>
 
-  <!-- Page 3: 测试页（三轮复用） -->
+  <!-- 测试页 -->
   <div id="page-test" class="page">
-    <div class="test-info" id="test-info">
-      <h2 id="round-label">第 1 轮</h2>
-      <div class="target-label">感受</div>
-      <div class="target-time" id="target-time">12</div>
-      <div class="target-label">秒</div>
+    <div class="test-ui" id="test-ui">
+      <div class="round-num" id="round-label">Round 1 / 3</div>
+      <div class="target-seconds" id="target-time">12</div>
+      <div class="target-unit">秒</div>
       <button class="btn" id="btn-ready" onclick="beginTiming()">我准备好了</button>
     </div>
-    <div class="tap-hint" id="tap-hint">点击屏幕任意位置</div>
+    <div class="tap-zone-hint" id="tap-hint">轻触屏幕任意位置</div>
   </div>
 
-  <!-- Page 4: 单轮反馈页 -->
+  <!-- 反馈页 -->
   <div id="page-feedback" class="page">
-    <div class="feedback">
-      <h2 id="fb-round">第 1 轮结果</h2>
-      <div class="result-value" id="fb-value">10.3 秒</div>
-      <div class="result-detail" id="fb-detail">目标 12 秒 · 偏差 -1.7 秒</div>
-      <div class="result-detail" id="fb-percent">快了 14%</div>
-      <div class="result-comment" id="fb-comment">你的时间跑得比现实快一拍</div>
-      <button class="btn" id="btn-next" onclick="nextRound()">进入下一轮</button>
+    <div class="feedback-content">
+      <div class="label" id="fb-round">Round 1</div>
+      <div class="elapsed" id="fb-value">10.3</div>
+      <div class="diff-info" id="fb-detail">目标 12 秒 · 偏差 -1.7 秒</div>
+      <div class="diff-info" id="fb-percent">快了 14%</div>
+      <div class="comment" id="fb-comment">你的时间跑得比现实快一拍</div>
+      <button class="btn" id="btn-next" onclick="nextRound()">下一轮</button>
     </div>
   </div>
 
-  <!-- Page 5: 结果页 -->
+  <!-- 结果页 -->
   <div id="page-result" class="page">
-    <div class="result-section">
-      <h3>你的时间流速</h3>
-      <div class="big-number" id="res-speed">快 11<span>%</span></div>
-      <div class="sub-stat" id="res-equiv"></div>
-      <div class="sub-stat" id="res-daily"></div>
-    </div>
-    <div class="result-section">
-      <h3>三轮趋势</h3>
-      <canvas class="trend-chart" id="trend-chart"></canvas>
-      <div class="trend-label" id="trend-label"></div>
-      <div class="trend-desc" id="trend-desc"></div>
-    </div>
-    <div class="result-section">
-      <h3>你的时间人格</h3>
-      <canvas id="character-canvas" width="300" height="300" style="margin: 0 auto;"></canvas>
-      <div class="character-card" id="character-card">
-        <div class="char-name" id="char-name"></div>
-        <div class="char-tag" id="char-tag"></div>
+    <div class="result-card" id="result-card">
+      <div class="label">Your Time Perception</div>
+      <div class="result-speed" id="res-speed">快 11<span class="unit">%</span></div>
+      <div class="result-equiv" id="res-equiv">你的体感 1 小时 = 现实 53 分钟</div>
+      <div class="result-equiv" id="res-daily">你每天比别人多"活" 53 分钟</div>
+
+      <div class="divider"></div>
+
+      <div class="trend-section">
+        <div class="label">Trend</div>
+        <div class="trend-visual" id="trend-visual"></div>
+        <div class="trend-type" id="trend-label"></div>
+        <div class="trend-desc" id="trend-desc"></div>
+      </div>
+
+      <div class="divider"></div>
+
+      <div class="character-section">
+        <div class="label">Time Personality</div>
+        <canvas id="char-text-canvas" width="280" height="80"></canvas>
+        <div class="char-portrait" id="char-portrait">
+          <span class="placeholder">照片</span>
+        </div>
+        <div class="char-name" id="char-name">拿破仑</div>
+        <div class="char-tag" id="char-tag">「精密加速者」</div>
         <div class="char-desc" id="char-desc"></div>
       </div>
-    </div>
-    <div class="btn-group">
-      <button class="btn" onclick="restart()">再测一次</button>
-      <button class="btn" onclick="shareResult()">分享结果</button>
+
+      <div class="result-actions">
+        <button class="btn btn--ghost" onclick="restart()">再测一次</button>
+        <button class="btn" onclick="shareResult()">保存结果</button>
+      </div>
+      <div class="watermark">Time Perception Lab · 时间感校准实验室</div>
     </div>
   </div>
 
