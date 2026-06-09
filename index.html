@@ -98,18 +98,9 @@
       font-size: 9.5px; letter-spacing: 0.3em;
       color: var(--muted); text-transform: uppercase; margin-top: 2px;
     }
-    .cover-meta {
-      text-align: right; font-size: 9.5px;
-      color: var(--muted); letter-spacing: 0.22em; line-height: 1.7;
-    }
     .cover-center {
       display: flex; flex-direction: column; justify-content: center;
       gap: 14px;
-    }
-    .cover-no-tag {
-      font-family: var(--display); font-style: italic;
-      font-size: 36px; color: var(--ink);
-      line-height: 1; letter-spacing: -0.03em;
     }
     .cover-en {
       font-family: var(--display); font-style: italic;
@@ -156,8 +147,6 @@
       .cover-frame { gap: 36px; }
       .cover-top .left .lab-cn { font-size: 18px; }
       .cover-top .left .lab-en { font-size: 11px; }
-      .cover-meta { font-size: 11px; }
-      .cover-no-tag { font-size: 72px; }
       .cover-en { font-size: 22px; }
       .cover-headline { font-size: clamp(56px, 7vw, 96px); line-height: 0.98; }
       .cover-sub { font-size: 15px; }
@@ -334,18 +323,6 @@
     .result-right { order: 1; }
     .result-left { order: 2; }
 
-    .result-no {
-      font-family: var(--display); font-style: italic;
-      font-size: 28px; color: var(--ink);
-      line-height: 1; letter-spacing: -0.03em;
-    }
-    .result-no .small {
-      font-size: 0.36em; letter-spacing: 0.3em;
-      font-style: normal; font-family: var(--sans);
-      color: var(--muted); text-transform: uppercase;
-      vertical-align: super; margin-left: 6px;
-    }
-
     .speed-label {
       font-size: 10px; letter-spacing: 0.3em;
       color: var(--muted); text-transform: uppercase;
@@ -515,7 +492,6 @@
       }
       .result-left { order: 1; gap: 22px; display: flex; flex-direction: column; justify-content: center; }
       .result-right { order: 2; gap: 16px; display: flex; flex-direction: column; align-items: flex-start; justify-content: center; }
-      .result-no {font-size: 48px; }
       .speed-value { font-size: clamp(72px, 8vw, 104px); }
       .equiv-list { font-size: 14px; }
       .clock-frame { width: clamp(180px, 22vw, 220px); }
@@ -573,14 +549,9 @@
           <div class="lab-cn">时间感校准实验室</div>
           <div class="lab-en">Time Perception Lab</div>
         </div>
-        <div class="cover-meta">
-          ISSUE 01<br>
-          2026 · 心理感知系列
-        </div>
       </div>
 
       <div class="cover-center">
-        <div class="cover-no-tag">No.01</div>
         <div class="cover-en">An experiment on <em>inner time</em></div>
         <h1 class="cover-headline">
           你的内在时钟<br>
@@ -699,10 +670,6 @@
 
       <!-- 左列：数据 -->
       <div class="result-left">
-        <div class="result-no">
-          NO.<span id="char-no">01</span>
-          <span class="small">Profile</span>
-        </div>
         <div>
           <div class="speed-label">Your Time Flow</div>
           <div class="speed-block">

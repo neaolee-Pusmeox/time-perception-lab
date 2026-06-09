@@ -1,0 +1,7 @@
+Subject: Nikola Tesla, Serbian-American inventor, age around 40, faithful to the 1890s Sarony studio photographs. Tall narrow face, very high cheekbones, deep-set dark eyes with an intense penetrating gaze, neatly parted dark hair combed back from a high forehead, immaculate thin black moustache trimmed straight, no beard, prominent ears, slim build. Wearing a formal late-19th-century three-piece dark suit: black tailcoat or frock coat with satin lapels, high stiff white wing collar, narrow dark silk bow tie or four-in-hand cravat, white shirtfront. Posture upright, hands not visible.
+
+Composition: Editorial black-and-white portrait, 1024x1024 square crop, head-and-shoulders bust, frontal pose, eyes looking directly at the camera, neutral mid-grey #9a9a9a background with subtle paper grain, soft directional key light from upper-left at 30 degrees, gentle fill, no harsh shadows, restrained film grain, magazine portrait style reminiscent of mid-century LIFE photography, deep tonal range, sharp focus on the eyes, no color tint, no sepia, no logos, no text, no border.
+
+Negative prompt: color, sepia, blurry, low resolution, cartoon, anime, 3d render, plastic skin, double face, asymmetric eyes, text, watermark, signature, frame, border, modern clothing, smartphone, screen, decorative props, lightning, Tesla coil, laboratory equipment, full body.
+
+Midjourney suffix: --ar 1:1 --style raw --stylize 100

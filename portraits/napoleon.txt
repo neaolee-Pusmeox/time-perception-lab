@@ -1,0 +1,7 @@
+Subject: Napoleon Bonaparte, French Emperor, age around 35, faithful to the Jacques-Louis David and Ingres painted likenesses. Short dark hair combed forward across the forehead in the Roman fashion, slightly receding hairline, prominent forehead, intense focused stare, thin lips set in a neutral line, clean-shaven, oval face with a strong jaw. Wearing the iconic dark Imperial Guard officer coat with high collar and large embroidered bullion epaulettes, single-breasted brass buttons, no hat, no decorative sash. Posture upright and composed.
+
+Composition: Editorial black-and-white portrait, 1024x1024 square crop, head-and-shoulders bust, frontal pose, eyes looking directly at the camera, neutral mid-grey #9a9a9a background with subtle paper grain, soft directional key light from upper-left at 30 degrees, gentle fill, no harsh shadows, restrained film grain, magazine portrait style reminiscent of mid-century LIFE photography, deep tonal range, sharp focus on the eyes, no color tint, no sepia, no logos, no text, no border.
+
+Negative prompt: color, sepia, blurry, low resolution, cartoon, anime, 3d render, plastic skin, double face, asymmetric eyes, text, watermark, signature, frame, border, smartphone, screen, decorative props, bicorne hat, full body, battlefield, horse.
+
+Midjourney suffix: --ar 1:1 --style raw --stylize 100

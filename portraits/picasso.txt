@@ -1,0 +1,7 @@
+Subject: Pablo Picasso, Spanish artist, age around 60, faithful to the mid-century photographs by Brassaï and Robert Capa. Completely bald or with a very short cropped silver fringe at the sides, broad rounded skull, deeply tanned weathered skin, prominent black piercing eyes that look almost too large for the face, thick black eyebrows, strong wide nose, full lips, clean-shaven, square jaw. Wearing his iconic plain horizontally-striped Breton sailor shirt (Marinière) in dark and light bands, OR a simple plain white short-sleeve shirt with an open collar. Posture relaxed but the stare is fixed and confrontational.
+
+Composition: Editorial black-and-white portrait, 1024x1024 square crop, head-and-shoulders bust, frontal pose, eyes looking directly at the camera, neutral mid-grey #9a9a9a background with subtle paper grain, soft directional key light from upper-left at 30 degrees, gentle fill, no harsh shadows, restrained film grain, magazine portrait style reminiscent of mid-century LIFE photography, deep tonal range, sharp focus on the eyes, no color tint, no sepia, no logos, no text, no border.
+
+Negative prompt: color, sepia, blurry, low resolution, cartoon, anime, 3d render, plastic skin, double face, asymmetric eyes, text, watermark, signature, frame, border, smartphone, screen, decorative props, paintbrush, easel, painting in background, full body, beret.
+
+Midjourney suffix: --ar 1:1 --style raw --stylize 100

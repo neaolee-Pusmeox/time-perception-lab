@@ -388,7 +388,7 @@ function renderClockTicks() {
 function showResult() {
   const { avgPercent, character, trendLabel, trendDesc, percents } = calculateResult();
 
-  document.getElementById('char-no').textContent = character.no;
+  // result-no 已删除，character.no 不再渲染到页面
 
   const absAvg = Math.abs(avgPercent).toFixed(0);
   const dir = avgPercent < -1 ? '快' : avgPercent > 1 ? '慢' : '精准';

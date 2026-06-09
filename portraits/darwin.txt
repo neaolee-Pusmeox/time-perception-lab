@@ -1,0 +1,7 @@
+Subject: Charles Darwin, English naturalist, age around 65 (late-career years), faithful to the 1860s–1880s photographs by Maull & Polyblank, Julia Margaret Cameron and Elliott & Fry. Long heavy white beard reaching the upper chest, completely bald on top with a heavy fringe of long white hair around the sides, very pronounced heavy brow ridge casting a soft shadow over deep-set thoughtful grey eyes, broad forehead, large prominent nose, full bushy white eyebrows. Weather-lined skin, gentle melancholic expression. Wearing a heavy dark Victorian wool overcoat with a wide turned-down collar, a high white shirt collar, and a dark loosely-tied silk cravat or stock. Posture slightly stooped, contemplative.
+
+Composition: Editorial black-and-white portrait, 1024x1024 square crop, head-and-shoulders bust, frontal pose, eyes looking directly at the camera, neutral mid-grey #9a9a9a background with subtle paper grain, soft directional key light from upper-left at 30 degrees, gentle fill, no harsh shadows, restrained film grain, magazine portrait style reminiscent of mid-century LIFE photography, deep tonal range, sharp focus on the eyes, no color tint, no sepia, no logos, no text, no border.
+
+Negative prompt: color, sepia, blurry, low resolution, cartoon, anime, 3d render, plastic skin, double face, asymmetric eyes, text, watermark, signature, frame, border, modern clothing, smartphone, screen, decorative props, finch, tortoise, microscope, full body, top hat.
+
+Midjourney suffix: --ar 1:1 --style raw --stylize 100

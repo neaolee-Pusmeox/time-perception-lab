@@ -1,0 +1,7 @@
+Subject: Immanuel Kant, Prussian philosopher, age around 60, faithful to the 18th-century Königsberg painted portraits (Becker, Doebler). Slight build, slender, narrow shoulders, oval face with a high domed forehead, fine sharp nose, thin tightly-pressed lips, alert grey eyes with a thoughtful inward gaze, very lightly powdered grey hair tied at the back in a small queue OR a modest white powdered wig of the late 18th-century scholarly fashion, clean-shaven. Wearing a dark plum-coloured (rendered here as dark grey) 18th-century frock coat with broad lapels, a high white linen stock cravat tied at the throat, a glimpse of a buff waistcoat. Posture upright, contained, slightly tilted forward as if mid-thought.
+
+Composition: Editorial black-and-white portrait, 1024x1024 square crop, head-and-shoulders bust, frontal pose, eyes looking directly at the camera, neutral mid-grey #9a9a9a background with subtle paper grain, soft directional key light from upper-left at 30 degrees, gentle fill, no harsh shadows, restrained film grain, magazine portrait style reminiscent of mid-century LIFE photography, deep tonal range, sharp focus on the eyes, no color tint, no sepia, no logos, no text, no border.
+
+Negative prompt: color, sepia, blurry, low resolution, cartoon, anime, 3d render, plastic skin, double face, asymmetric eyes, text, watermark, signature, frame, border, modern clothing, smartphone, screen, decorative props, book in hand, library, full body, large wig.
+
+Midjourney suffix: --ar 1:1 --style raw --stylize 100

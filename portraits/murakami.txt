@@ -1,0 +1,7 @@
+Subject: Haruki Murakami, Japanese novelist, age around 60–65, faithful to widely-circulated press photographs and book-jacket portraits. Asian man of medium build, short cropped greying dark hair brushed casually back, slightly thinning at the front, broad slightly tanned face from his daily long-distance running, clean-shaven, gentle alert eyes with a calm slightly amused expression behind subtle small lines, prominent cheekbones, full lips relaxed into a faint half-smile, no glasses. Wearing a plain dark navy or charcoal cotton crew-neck T-shirt OR a simple plain dark zip-up jogging jacket (no logos visible). Posture relaxed, shoulders slightly forward, hands not visible.
+
+Composition: Editorial black-and-white portrait, 1024x1024 square crop, head-and-shoulders bust, frontal pose, eyes looking directly at the camera, neutral mid-grey #9a9a9a background with subtle paper grain, soft directional key light from upper-left at 30 degrees, gentle fill, no harsh shadows, restrained film grain, magazine portrait style reminiscent of mid-century LIFE photography, deep tonal range, sharp focus on the eyes, no color tint, no sepia, no logos, no text, no border.
+
+Negative prompt: color, sepia, blurry, low resolution, cartoon, anime, 3d render, plastic skin, double face, asymmetric eyes, text, watermark, signature, frame, border, smartphone, screen, decorative props, cat, vinyl records, jazz bar, running track, full body, glasses, logo.
+
+Midjourney suffix: --ar 1:1 --style raw --stylize 100
