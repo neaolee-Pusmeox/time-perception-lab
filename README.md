@@ -77,6 +77,7 @@ npx serve .
 
 ## 版本
 
+- v3.3 — 结果页布局重构：等距美学系统（双列上下沿对齐、水平居中、响应式断点优化）
 - v3.2 — 页面极简化 + portrait prompt pack + file:// 头像修复
 - v3.1 — 移动优先重构 + SVG 钟表头像 + saveImage 健壮性
 - v3.0 — 粒子聚合动效 + 九宫格匹配 + html2canvas 导出

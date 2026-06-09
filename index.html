@@ -304,62 +304,112 @@
       max-width: 360px; line-height: 1.7;
     }
 
-    /* ===== 结果页（手机：纵向单屏 / 桌面：横向双列）===== */
-    #page-result { padding: 0; align-items: center; justify-content: center; }
+    /* ===== 结果页 ===== */
+    /* 等距美学布局系统：
+       - 整体：水平居中 + 垂直居中
+       - 双列：等宽、底部对齐、列间距 = 列与按钮行的间距
+       - 按钮行：居中，与双列内容等距 */
+    #page-result {
+      padding: 0;
+      overflow-y: auto;
+      -webkit-overflow-scrolling: touch;
+    }
     .result-stage {
-      width: 100%; height: 100%;
-      max-width: 1240px;
-      display: grid;
-      grid-template-columns: 1fr;
-      grid-template-rows: auto 1fr;
-      gap: 14px;
-      padding: 22px 20px 48px;
-      align-items: start;
+      width: 100%;
+      min-height: 100%;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 28px 20px;
       background: var(--bg);
-      position: relative;
-      overflow: hidden;
+      box-sizing: border-box;
     }
-    /* 手机：右列（人物）在上、左列（数据）在下，让粒子姓名一开场就居中显眼 */
-    .result-right { order: 1; }
-    .result-left { order: 2; }
 
-    .speed-label {
-      font-size: 10px; letter-spacing: 0.3em;
-      color: var(--muted); text-transform: uppercase;
+    /* --- 内容区：移动端单列居中 --- */
+    .result-body {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 32px;
+      width: 100%;
+      max-width: 340px;
     }
-    .speed-block { display: flex; align-items: baseline; gap: 10px; flex-wrap: wrap; }
+
+    /* --- 两列顺序（移动端：人物在上、数据在下）--- */
+    .result-right { order: 1; }
+    .result-left  { order: 2; }
+
+    /* --- 人物列 --- */
+    .result-right {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      text-align: center;
+      gap: 14px;
+      width: 100%;
+    }
+
+    /* --- 数据列 --- */
+    .result-left {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 20px;
+      width: 100%;
+    }
+
+    /* --- 统一 kicker 样式 --- */
+    .result-kicker {
+      font-size: 10px;
+      letter-spacing: 0.3em;
+      color: var(--muted);
+      text-transform: uppercase;
+      text-align: center;
+    }
+
+    /* --- 速度数值 --- */
+    .speed-block { display: flex; align-items: baseline; justify-content: center; gap: 10px; flex-wrap: wrap; }
     .speed-value {
       font-family: var(--serif); font-weight: 900;
-      font-size: clamp(48px, 14vw, 72px);
-      line-height: 0.92; letter-spacing: -0.01em;
+      font-size: clamp(52px, 15vw, 72px);
+      line-height: 0.95; letter-spacing: -0.01em;
+      text-align: center;
     }
     .speed-value.fast { color: var(--accent); }
     .speed-value .pct {
       font-family: var(--display); font-style: italic;
-      font-weight: 400; font-size: 0.45em;
-      color: var(--muted); margin-left: 4px;
+      font-weight: 400; font-size: 0.4em;
+      color: var(--muted); margin-left: 2px;
     }
+
+    /* --- 等值列表 --- */
     .equiv-list {
       display: grid; gap: 4px;
-      font-size: clamp(11.5px, 3.2vw, 13.5px);
-      color: var(--ink-soft); line-height: 1.6;
-      margin-top: 6px;
+      font-size: clamp(12px, 3.4vw, 14px);
+      color: var(--ink-soft); line-height: 1.7;
+      text-align: center;
     }
     .equiv-list .num {
       font-family: var(--display); font-weight: 700;
       color: var(--accent); margin: 0 2px;
     }
-    .trend-block { padding-top: 6px; }
+
+    /* --- 趋势块 --- */
+    .trend-block {
+      width: 100%;
+      text-align: center;
+    }
     .trend-visual {
-      display: flex; align-items: flex-end;
-      gap: clamp(10px, 3vw, 22px);
-      height: clamp(60px, 12vw, 90px);
-      margin: 8px 0 14px;
+      display: flex; align-items: flex-end; justify-content: center;
+      gap: clamp(12px, 4vw, 24px);
+      height: clamp(56px, 14vw, 80px);
+      margin: 10px auto 12px;
     }
     .trend-bar-wrap {
-      flex: 1; max-width: 60px;
+      flex: 1; max-width: 56px;
       display: flex; flex-direction: column;
-      align-items: center; gap: 8px;
+      align-items: center; gap: 6px;
       height: 100%; justify-content: flex-end;
     }
     .trend-bar {
@@ -369,7 +419,7 @@
     }
     .trend-bar.pos { background: var(--faint); }
     .trend-bar-label {
-      font-size: 9px; letter-spacing: 0.16em;
+      font-size: 9px; letter-spacing: 0.14em;
       color: var(--muted); text-transform: uppercase; white-space: nowrap;
     }
     .trend-type {
@@ -380,20 +430,13 @@
     .trend-desc {
       font-size: clamp(11px, 3vw, 13px);
       color: var(--muted); line-height: 1.6;
-      margin-top: 4px; max-width: 320px;
+      margin-top: 4px;
     }
 
-    /* 右列：人物 */
-    .result-right {
-      display: flex; flex-direction: column;
-      gap: 10px; align-items: center; text-align: center;
-    }
-    .result-right .kicker { margin-bottom: 2px; }
-
-    /* 钟表样式头像框（SVG 版本，精准对齐） */
+    /* --- 钟表头像框 --- */
     .clock-frame {
       position: relative;
-      width: clamp(160px, 40vw, 200px);
+      width: clamp(150px, 38vw, 200px);
       aspect-ratio: 1;
       flex-shrink: 0;
     }
@@ -435,87 +478,137 @@
     }
     .clock-frame .portrait-disc .portrait-placeholder {
       font-family: var(--display); font-style: italic;
-      font-size: clamp(38px, 9vw, 58px);
+      font-size: clamp(36px, 8vw, 54px);
       color: var(--faint);
     }
 
-    /* 粒子姓名 canvas */
+    /* --- 粒子姓名 --- */
     #name-canvas {
       width: 100%;
-      max-width: 360px;
-      height: clamp(64px, 16vw, 96px);
+      max-width: 320px;
+      height: clamp(60px, 15vw, 88px);
       display: block;
     }
     .char-tag {
       font-family: var(--display); font-style: italic;
-      font-size: clamp(14px, 3.8vw, 18px);
+      font-size: clamp(15px, 4vw, 18px);
       color: var(--accent); letter-spacing: 0.02em;
     }
     .char-desc {
       font-family: var(--serif);
       font-size: clamp(12px, 3.2vw, 14px);
       color: var(--ink-soft); line-height: 1.8;
-      text-align: left;
-      max-width: 340px;
+      text-align: center;
+      max-width: 320px;
       border-top: 1px solid var(--line);
       padding-top: 12px; margin-top: 4px;
     }
 
+    /* --- 按钮行 --- */
     .result-actions {
-      display: flex; gap: 8px;
-      margin-top: 10px;
-      width: 100%; max-width: 340px;
+      flex-shrink: 0;
+      display: flex; gap: 10px;
+      justify-content: center;
+      width: 100%;
+      margin-top: 32px;
     }
     .result-actions .btn {
-      flex: 1; padding: 12px 6px;
+      flex: 1; max-width: 160px;
+      padding: 12px 8px;
       font-size: 10.5px; letter-spacing: 0.18em;
     }
+
+    /* --- 水印行 --- */
     .result-watermark {
-      position: absolute;
-      bottom: 12px; left: 0; right: 0;
+      flex-shrink: 0;
       text-align: center;
       font-size: 9px; color: var(--faint);
       letter-spacing: 0.32em;
       text-transform: uppercase;
       pointer-events: none;
+      margin-top: 16px;
     }
 
-    /* 桌面：恢复左右双列、加大尺寸 */
+    /* ===== 桌面端：>=820px 双列并排等距布局 ===== */
     @media (min-width: 820px) {
       .result-stage {
-        grid-template-columns: 1.05fr 1fr;
-        grid-template-rows: 1fr;
-        gap: 56px;
-        padding: 64px 72px;
-        align-items: center;
-        align-content: center;
+        padding: 40px 64px;
+        justify-content: center;
+        max-height: 100vh;
       }
-      .result-left { order: 1; gap: 22px; display: flex; flex-direction: column; justify-content: center; }
-      .result-right { order: 2; gap: 16px; display: flex; flex-direction: column; align-items: flex-start; justify-content: center; }
-      .speed-value { font-size: clamp(72px, 8vw, 104px); }
-      .equiv-list { font-size: 14px; }
-      .clock-frame { width: clamp(180px, 22vw, 220px); }
-      #name-canvas { height: clamp(80px, 9vw, 96px); }
-      .char-desc { font-size: 13.5px; }
-      .trend-visual { height: clamp(60px, 8vw, 84px); }
+      .result-body {
+        flex-direction: row;
+        align-items: stretch;
+        justify-content: center;
+        gap: 64px;
+        max-width: 960px;
+      }
+      /* 桌��端：数据在左，人物在右；两列等高，内容垂直均匀分布 */
+      .result-left {
+        order: 1;
+        align-items: flex-start;
+        justify-content: space-between;
+        flex: 0 1 380px;
+        gap: 0;
+      }
+      .result-right {
+        order: 2;
+        align-items: center;
+        justify-content: space-between;
+        text-align: center;
+        flex: 0 1 380px;
+        gap: 0;
+      }
+      /* 数据列左对齐 */
+      .result-left .result-kicker { text-align: left; }
+      .result-right .result-kicker { text-align: center; }
+      .speed-value { font-size: clamp(72px, 7.5vw, 96px); text-align: left; }
+      .equiv-list { font-size: 14px; text-align: left; }
+      .trend-block { text-align: left; }
+      .trend-visual { justify-content: flex-start; margin-left: 0; }
+      .clock-frame { width: clamp(180px, 18vw, 220px); }
+      #name-canvas { height: clamp(76px, 8vw, 96px); max-width: 360px; }
+      .char-desc { text-align: center; max-width: 340px; }
+      /* 按钮行与内容区等距 */
+      .result-actions { margin-top: 40px; }
     }
 
-    /* 平板中间档 */
+    /* ===== 平板中间档 720-819px ===== */
     @media (min-width: 720px) and (max-width: 819px) {
-      .result-stage { padding: 36px 48px 56px; gap: 22px; }
-      .clock-frame { width: clamp(170px, 28vw, 200px); }
-      .speed-value { font-size: clamp(60px, 10vw, 80px); }
+      .result-stage { padding: 32px 40px; }
+      .result-body {
+        max-width: 480px;
+        gap: 28px;
+      }
+      .clock-frame { width: clamp(160px, 28vw, 200px); }
+      .speed-value { font-size: clamp(56px, 10vw, 72px); }
     }
 
-    /* 矮屏（横屏手机/小笔记本）压缩 */
-    @media (max-height: 720px) and (min-width: 820px) {
-      .result-stage { padding: 28px 48px; }
-      .clock-frame { width: clamp(150px, 18vw, 180px); }
-      .speed-value { font-size: clamp(60px, 7vw, 80px); }
-      .trend-visual { height: 56px; margin: 6px 0 12px; }
+    /* ===== 矮屏横屏（小笔记本/横屏手机）===== */
+    @media (max-height: 680px) and (min-width: 820px) {
+      .result-stage { padding: 20px 48px; }
+      .result-body { gap: 48px; }
+      .clock-frame { width: clamp(130px, 15vw, 170px); }
+      .speed-value { font-size: clamp(52px, 6vw, 72px); }
+      .trend-visual { height: 48px; margin: 6px 0 10px; }
+      #name-canvas { height: 60px; }
+      .result-actions { margin-top: 24px; }
+      .char-desc { font-size: 12px; }
     }
 
-    /* 截模式：去掉操作按钮 */
+    /* ===== 超矮屏（<560px高度）进一步压缩 ===== */
+    @media (max-height: 560px) and (min-width: 820px) {
+      .result-stage { padding: 12px 40px; }
+      .result-body { gap: 36px; }
+      .clock-frame { width: clamp(110px, 13vw, 150px); }
+      .speed-value { font-size: clamp(44px, 5.5vw, 60px); }
+      .trend-visual { height: 40px; }
+      #name-canvas { height: 48px; }
+      .result-actions { margin-top: 16px; }
+      .result-watermark { margin-top: 8px; }
+    }
+
+    /* 截图模式：隐藏操作按钮 */
     .capture-mode .result-actions { visibility: hidden; }
 
     .toast {
@@ -642,58 +735,56 @@
   </div>
 
   <!-- ===== Page 5: 结果 ===== -->
+  <!-- 结构：内容区(双列) → 按钮行 → 水印行，按钮和水印独立于内容 -->
   <div id="page-result" class="page">
     <div class="result-stage" id="result-card">
-      <!-- 右列：人物（手机端优先显示） -->
-      <div class="result-right">
-        <div class="kicker">Your Time Personality</div>
-        <canvas id="name-canvas"></canvas>
-        <div class="clock-frame" id="clock-frame">
-          <!-- 头像盘（底层） -->
-          <div class="portrait-disc" id="char-portrait">
-            <div class="portrait-placeholder" id="char-initial">N</div>
+      <!-- 内容区 -->
+      <div class="result-body">
+        <!-- 人物列（手机端在上） -->
+        <div class="result-right">
+          <div class="result-kicker">Your Time Personality</div>
+          <canvas id="name-canvas"></canvas>
+          <div class="clock-frame" id="clock-frame">
+            <div class="portrait-disc" id="char-portrait">
+              <div class="portrait-placeholder" id="char-initial">N</div>
+            </div>
+            <svg class="clock-svg" viewBox="0 0 200 200" preserveAspectRatio="xMidYMid meet" aria-hidden="true">
+              <circle class="ring-outer" cx="100" cy="100" r="99"></circle>
+              <circle class="ring-inner" cx="100" cy="100" r="92"></circle>
+              <g id="clock-ticks-svg"></g>
+              <g id="clock-nums-svg"></g>
+              <line class="clock-hand" id="clock-hand" x1="100" y1="100" x2="100" y2="36"></line>
+              <circle class="clock-center" cx="100" cy="100" r="4"></circle>
+            </svg>
           </div>
-          <!-- 钟表 SVG（上层）：环、刻度、数字、指针、中心点 -->
-          <svg class="clock-svg" viewBox="0 0 200 200" preserveAspectRatio="xMidYMid meet" aria-hidden="true">
-            <circle class="ring-outer" cx="100" cy="100" r="99"></circle>
-            <circle class="ring-inner" cx="100" cy="100" r="92"></circle>
-            <g id="clock-ticks-svg"></g>
-            <g id="clock-nums-svg"></g>
-            <line class="clock-hand" id="clock-hand"
-                  x1="100" y1="100" x2="100" y2="36"></line>
-            <circle class="clock-center" cx="100" cy="100" r="4"></circle>
-          </svg>
+          <div class="char-tag" id="char-tag">「精密加速者」</div>
+          <p class="char-desc" id="char-desc"></p>
         </div>
-        <div class="char-tag" id="char-tag">「精密加速者」</div>
-        <p class="char-desc" id="char-desc"></p>
-      </div>
 
-      <!-- 左列：数据 -->
-      <div class="result-left">
-        <div>
-          <div class="speed-label">Your Time Flow</div>
-          <div class="speed-block">
-            <div class="speed-value fast" id="res-speed">快 11<span class="pct">%</span></div>
+        <!-- 数据列（手机端在下） -->
+        <div class="result-left">
+          <div class="result-kicker">Your Time Flow</div>
+          <div class="speed-value fast" id="res-speed">快 11<span class="pct">%</span></div>
+          <div class="equiv-list">
+            <div>你的体感 <span class="num" id="eq-hour">53</span> 分钟 = 现实 1 小时</div>
+            <div>你每天比别人 <span id="eq-direction">多</span>"活" <span class="num" id="eq-daily">53</span> 分钟</div>
           </div>
-        </div>
-        <div class="equiv-list">
-          <div>你的体感 <span class="num" id="eq-hour">53</span> 分钟 = 现实 1 小时</div>
-          <div>你每天比别人 <span id="eq-direction">多</span>"活" <span class="num" id="eq-daily">53</span> 分钟</div>
-        </div>
-
-        <div class="trend-block">
-          <div class="speed-label">Three-Round Trend</div>
-          <div class="trend-visual" id="trend-visual"></div>
-          <div class="trend-type" id="trend-label">逐渐校准型</div>
-          <div class="trend-desc" id="trend-desc">越来越准，你的大脑在实时学习</div>
-        </div>
-
-        <div class="result-actions">
-         <button class="btn btn--ghost" onclick="restart()">再测一次</button>
-          <button class="btn" onclick="saveImage()">保存图片</button>
+          <div class="trend-block">
+            <div class="result-kicker">Three-Round Trend</div>
+            <div class="trend-visual" id="trend-visual"></div>
+            <div class="trend-type" id="trend-label">逐渐校准型</div>
+            <div class="trend-desc" id="trend-desc">越来越准，你的大脑在实时学习</div>
+          </div>
         </div>
       </div>
 
+      <!-- 按钮行：永远居中，固定在内容下方 -->
+      <div class="result-actions">
+        <button type="button" class="btn btn--ghost" onclick="restart()">再测一次</button>
+        <button type="button" class="btn" id="btn-save-image" onclick="saveImage()">保存图片</button>
+      </div>
+
+      <!-- 水印行：永远居中，固定在页面最底 -->
       <div class="result-watermark">时间感校准实验室 · Time Perception Lab</div>
     </div>
   </div>

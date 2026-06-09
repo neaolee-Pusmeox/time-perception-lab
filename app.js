@@ -666,9 +666,10 @@ async function saveImage() {
     const charName = (document.querySelector('#char-tag').textContent || '').replace(/[「」]/g, '').trim() || '我的时间人格';
     const filename = `时间人格_${charName}_${Date.now()}.png`;
 
-    // 尝试 Web Share（移动端原生分享）
+    // 尝试 Web Share（仅移动端；桌面端 canShare 误报会导致系统弹窗报错）
     const blob = await new Promise(res => canvasOut.toBlob(res, 'image/png'));
-    if (blob && navigator.canShare) {
+    const isMobile = /Mobi|Android|iPhone|iPad/i.test(navigator.userAgent);
+    if (blob && isMobile && navigator.canShare) {
       try {
         const file = new File([blob], filename, { type: 'image/png' });
         if (navigator.canShare({ files: [file] })) {
