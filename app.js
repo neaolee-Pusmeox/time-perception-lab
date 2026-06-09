@@ -453,9 +453,17 @@ function showResult() {
   const portrait = document.getElementById('char-portrait');
   portrait.innerHTML = `<div class="portrait-placeholder">${character.name[0]}</div>`;
   const img = new Image();
-  img.crossOrigin = 'anonymous';
-  img.onload = () => { portrait.innerHTML = ''; portrait.appendChild(img); };
-  img.onerror = () => { /* 保留占位 */ };
+  // 注意：不要设置 crossOrigin。本地静态图无需也不应触发 CORS，
+  // file:// 或不带 ACAO 头的本地服务器都会让带 crossOrigin 的请求 onerror。
+  // html2canvas 这边通过 allowTaint:true / freezeNameCanvasForCapture 兜底。
+  img.onload = () => {
+    portrait.innerHTML = '';
+    portrait.appendChild(img);
+  };
+  img.onerror = (e) => {
+    console.warn('portrait load failed:', character.img, e);
+    // 保留占位首字母
+  };
   img.src = character.img;
 
   goToPage('result');
@@ -644,8 +652,8 @@ async function saveImage() {
     const canvasOut = await html2canvas(card, {
       backgroundColor: '#f5f2ed',
       scale: Math.min(2, window.devicePixelRatio || 1.5),
-      useCORS: true,
-      allowTaint: false,
+      useCORS: false,
+      allowTaint: true,
       logging: false,
       foreignObjectRendering: false,
       // 强制使用当前可见尺寸，避免 1240px max-width 抓到超大空白
