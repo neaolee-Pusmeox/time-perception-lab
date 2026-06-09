@@ -2,330 +2,736 @@
 <html lang="zh-CN">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>时间感校准实验室</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+  <title>时间感校准实验室 · Time Perception Lab</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&family=Noto+Serif+SC:wght@400;700&display=swap" rel="stylesheet">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=Noto+Serif+SC:wght@400;700;900&family=Inter:wght@300;400;500&display=swap" rel="stylesheet">
+  <script defer src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
   <style>
-:root {
+    :root {
       --bg: #f5f2ed;
-      --bg-card: #ffffff;
-      --text-primary: #1a1a1a;
-      --text-secondary: #6b6b6b;
-      --text-muted: #a0a0a0;
-      --accent: #1a1a1a;
-      --border: #e0dcd6;
-      --serif: 'Noto Serif SC', 'Playfair Display', Georgia, serif;
-      --sans: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang SC', sans-serif;
+      --bg-deep: #ece8e0;
+      --ink: #1a1a1a;
+      --ink-soft: #3a3a3a;
+      --muted: #6b6b6b;
+      --faint: #a0a0a0;
+      --line: #d8d3cb;
+      --accent: #b8451f;
+      --serif: 'Noto Serif SC', 'Songti SC', Georgia, serif;
+      --display: 'Playfair Display', 'Noto Serif SC', Georgia, serif;
+      --sans: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang SC', sans-serif;
     }
-    * { margin: 0; padding: 0; box-sizing: border-box; }
+    * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
     html, body {
       width: 100%; height: 100%;
-      overflow: hidden;
-      overscroll-behavior: none;
+      overflow: hidden; overscroll-behavior: none;
       touch-action: manipulation;
       font-family: var(--sans);
-      background: var(--bg);
-      color: var(--text-primary);
+      background: var(--bg); color: var(--ink);
+      -webkit-font-smoothing: antialiased;
     }
 
-    /* Canvas 背景 */
     canvas#anim-canvas {
-      position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+      position: fixed; inset: 0; width: 100%; height: 100%;
       z-index: 0; pointer-events: none;
     }
 
-    /* 页面容器 */
+    /* ===== 页面容器（基础移动优先）===== */
     .page {
-      position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-      display: flex; flex-direction: column; align-items: center; justify-content: center;
-      z-index: 10; padding: 40px 24px;
-      opacity: 0; pointer-events: none;
-      transform: translateY(20px);
-      transition: opacity 0.8s cubic-bezier(0.4, 0, 0.2, 1), transform 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+      position: fixed; inset: 0;
+      display: flex; flex-direction: column;
+      align-items: center; justify-content: center;
+      padding: 24px 22px;
+      z-index: 10;
+      opacity: 0; visibility: hidden;
+      transform: translateY(12px);
+      transition: opacity 0.65s cubic-bezier(0.4, 0, 0.2, 1),
+                  transform 0.65s cubic-bezier(0.4, 0, 0.2, 1);
+      pointer-events: none;
     }
     .page.active {
-      opacity: 1; pointer-events: auto; transform: translateY(0);
+      opacity: 1; visibility: visible; transform: translateY(0);
+      pointer-events: auto; z-index: 20;
     }
-    .page.exit {
-      opacity: 0; transform: translateY(-20px);
-    }
+    .page.exit { opacity: 0; transform: translateY(-12px); z-index: 15; }
 
-    /* 排版 */
-    .title-lg {
-      font-family: var(--serif);
-      font-size: clamp(32px, 8vw, 48px);
-      font-weight: 700; line-height: 1.3;
-      text-align: center; letter-spacing: -0.02em;
-    }
-    .subtitle {
-      font-size: 15px; color: var(--text-secondary);
-      text-align: center; margin-top: 12px; line-height: 1.6;
-      max-width: 280px;
-    }
-    .label {
-      font-size: 11px; color: var(--text-muted);
-      text-transform: uppercase; letter-spacing: 3px;
-      margin-bottom: 8px;
-    }
-
-    /* 按钮 */
-    .btn {
-      margin-top: 48px; padding: 16px 40px;
-      background: var(--accent); color: #fff;
-      border: none; border-radius: 0;
-      font-size: 14px; font-family: var(--sans);
-      letter-spacing: 1px; cursor: pointer;
-      transition: all 0.3s;
-    }
-    .btn:active { transform: scale(0.97); opacity: 0.8; }
-    .btn--ghost {
-      background: transparent; color: var(--text-primary);
-      border: 1px solid var(--border);
-    }
-
-    /* 分割线装饰 */
-    .divider {
-      width: 40px; height: 1px;
-      background: var(--border); margin: 24px auto;
-    }
-
-    /* === 落地页 === */
-    #page-landing .hero-number {
-      font-family: var(--serif);
-      font-size: clamp(80px, 20vw, 140px);
-      font-weight: 400; color: var(--text-muted);
-      opacity: 0.15; position: absolute;
-      top: 10%; right: 8%;
-    }
-
-    /* === 说明页 === */
-    .rules { list-style: none; margin: 32px 0; max-width: 300px; }
-    .rules li {
-      padding: 16px 0; border-bottom: 1px solid var(--border);
-      font-size: 14px; color: var(--text-secondary); line-height: 1.6;
-      display: flex; gap: 16px; align-items: flex-start;
-    }
-    .rules li .num {
-      font-family: var(--serif); font-size: 18px;
-      color: var(--text-primary); flex-shrink: 0;
-      width: 24px;
-    }
-
-    /* === 测试页 === */
-    #page-test { cursor: default; }
-    .test-ui { text-align: center; transition: opacity 0.6s; }
-    .test-ui .round-num {
-      font-family: var(--serif); font-size: 13px;
-      color: var(--text-muted); letter-spacing: 3px;
+    /* ===== 通用类型 ===== */
+    .kicker {
+      font-size: 10px; letter-spacing: 0.3em;
       text-transform: uppercase;
+      color: var(--muted); font-weight: 500;
     }
-    .test-ui .target-seconds {
-      font-family: var(--serif);
-      font-size: clamp(72px, 18vw, 120px);
-      font-weight: 400; margin: 8px 0;
-      line-height: 1;
+    .hairline { width: 48px; height: 1px; background: var(--ink); opacity: 0.85; }
+    .btn {
+      display: inline-block;
+      padding: 13px 28px;
+      background: var(--ink); color: #fff;
+      border: 1px solid var(--ink); border-radius: 0;
+      font-family: var(--sans);
+      font-size: 12px; font-weight: 500;
+      letter-spacing: 0.18em; text-transform: uppercase;
+      cursor: pointer;
+      transition: transform 0.2s ease, background 0.25s ease, color 0.25s ease;
     }
-    .test-ui .target-unit {
-      font-size: 14px; color: var(--text-secondary);
-    }
-    .tap-zone-hint {
-      position: fixed; bottom: 48px; left: 0; width: 100%;
-      text-align: center; font-size: 12px; color: var(--text-muted);
-      letter-spacing: 2px;
-      opacity: 0; transition: opacity 0.6s;
-    }
-    .tap-zone-hint.show { opacity: 1; }
+    .btn:active { transform: scale(0.97); }
+    .btn--ghost { background: transparent; color: var(--ink); }
+    .btn--ghost:active { background: var(--ink); color: #fff; }
 
-    /* === 反馈页 === */
-    .feedback-content { text-align: center; }
-    .feedback-content .elapsed {
-      font-family: var(--serif);
-      font-size: clamp(48px, 12vw, 72px);
-      font-weight: 400; margin: 8px 0;
+    /* ===== 落地页（移动优先 →桌面增强）===== */
+    #page-landing { padding: 28px 22px; justify-content: space-between; }
+    .cover-frame {
+      width: 100%; max-width: 1080px; height: 100%;
+      display: grid;
+      grid-template-rows: auto 1fr auto;
+      gap: 18px; position: relative; z-index: 2;
     }
-    .feedback-content .diff-info {
-      font-size: 14px; color: var(--text-secondary); margin: 4px 0;
+    .cover-top {
+      display: flex; justify-content: space-between; align-items: flex-start; gap: 12px;
     }
-    .feedback-content .comment {
-      font-size: 13px; color: var(--text-muted);
-      margin-top: 16px; font-style: italic;
+    .cover-top .left .lab-cn {
+      font-family: var(--serif); font-weight: 900;
+      font-size: 15px; letter-spacing: 0.05em;
+      color: var(--ink); margin-top: 4px;
+    }
+    .cover-top .left .lab-en {
+      font-size: 9.5px; letter-spacing: 0.3em;
+      color: var(--muted); text-transform: uppercase; margin-top: 2px;
+    }
+    .cover-meta {
+      text-align: right; font-size: 9.5px;
+      color: var(--muted); letter-spacing: 0.22em; line-height: 1.7;
+    }
+    .cover-center {
+      display: flex; flex-direction: column; justify-content: center;
+      gap: 14px;
+    }
+    .cover-no-tag {
+      font-family: var(--display); font-style: italic;
+      font-size: 36px; color: var(--ink);
+      line-height: 1; letter-spacing: -0.03em;
+    }
+    .cover-en {
+      font-family: var(--display); font-style: italic;
+      font-weight: 400; font-size: 15px;
+      color: var(--muted); letter-spacing: 0.04em;
+    }
+    .cover-headline {
+      font-family: var(--serif); font-weight: 900;
+      font-size: clamp(38px, 11vw, 56px);
+      line-height: 1.02; letter-spacing: -0.01em;
+      color: var(--ink);
+    }
+    .cover-headline em {
+      font-style: italic; font-family: var(--display);
+      font-weight: 400; color: var(--accent);
+    }
+    .cover-sub {
+      font-size: 13px; color: var(--muted);
+      max-width: 480px; line-height: 1.75;
+    }
+    .cover-bottom {
+      display: flex; flex-direction: column;
+      gap: 16px; align-items: stretch;
+    }
+    .cover-tags { display: flex; gap: 6px; flex-wrap: wrap; }
+    .cover-tag {
+      padding: 5px 10px;
+      border: 1px solid var(--line);
+      font-size: 9.5px; letter-spacing: 0.2em;
+      color: var(--muted); text-transform: uppercase;
+    }
+    .cover-bg-no {
+      position: absolute;
+      right: 0; bottom: -8px;
+      opacity: 0.05;
+      font-family: var(--display); font-style: italic;
+      font-size: clamp(180px, 60vw, 360px);
+      z-index: 1; pointer-events: none;
+      line-height: 0.8;
     }
 
-    /* === 结果页 === */
-    #page-result {
-      justify-content: flex-start;
-      padding: 0; overflow-y: auto;
+    @media (min-width: 720px) {
+      #page-landing { padding: 56px 64px; }
+      .cover-frame { gap: 36px; }
+      .cover-top .left .lab-cn { font-size: 18px; }
+      .cover-top .left .lab-en { font-size: 11px; }
+      .cover-meta { font-size: 11px; }
+      .cover-no-tag { font-size: 72px; }
+      .cover-en { font-size: 22px; }
+      .cover-headline { font-size: clamp(56px, 7vw, 96px); line-height: 0.98; }
+      .cover-sub { font-size: 15px; }
+      .cover-bottom { flex-direction: row; justify-content: space-between; align-items: flex-end; gap: 24px; }
+      .cover-tag { font-size: 10px; padding: 6px 12px; }
     }
-    .result-card {
-      width: 100%; min-height: 100vh; max-width: 420px;
-      padding: 60px 32px 48px;
-      display: flex; flex-direction: column; align-items: center;
-      background: var(--bg);
-    }
-    .result-speed {
-      font-family: var(--serif);
-      font-size: clamp(56px, 14vw, 80px);
-      font-weight: 700; line-height: 1;
-      margin: 16px 0 4px;
-    }
-    .result-speed .unit { font-size: 0.4em; font-weight: 400; }
-    .result-equiv { font-size: 14px; color: var(--text-secondary); margin: 4px 0; }
-    .trend-section { width: 100%; margin: 32px 0; text-align: center; }
-    .trend-visual {
-      display: flex; justify-content: center; align-items: flex-end;
-      gap: 24px; height: 60px; margin: 16px 0;
-    }
-    .trend-bar {
-      width: 3px; background: var(--text-primary); border-radius: 2px;
-      position: relative;
-    }
-    .trend-bar::after {
-      content: attr(data-label);
-      position: absolute; bottom: -20px; left: 50%;
-      transform: translateX(-50%);
-      font-size: 10px; color: var(--text-muted); white-space: nowrap;
-    }
-    .trend-type { font-family: var(--serif); font-size: 18px; margin-top: 28px; }
-    .trend-desc { font-size: 13px; color: var(--text-secondary); margin-top: 4px; }
 
-    /* 人物区域 */
-    .character-section { width: 100%; margin-top: 32px; text-align: center; }
-    .char-portrait {
-      width: 120px; height: 120px; border-radius: 50%;
-      background: #d0ccc6; margin: 16px auto;
-      overflow: hidden; display: flex; align-items: center; justify-content: center;
+    /* ===== 实验规则页 ===== */
+    .intro-frame {
+      width: 100%; max-width: 720px;
+      display: grid;
+      grid-template-rows: auto 1fr auto;
+      gap: 22px; height: 100%;
+      padding: 16px 0;
     }
-    .char-portrait img {
-      width: 100%; height: 100%; object-fit: cover;
-      filter: grayscale(1) contrast(1.1);
-    }
-    .char-portrait .placeholder {
-      font-size: 11px; color: var(--text-muted);
-    }
-    .char-name {
-      font-family: var(--serif); font-size: 24px; font-weight: 700;
+    .intro-head { text-align: center; }
+    .intro-head h2 {
+      font-family: var(--serif); font-weight: 900;
+      font-size: clamp(28px, 7vw, 48px);
+      letter-spacing: 0.02em;
       margin-top: 12px;
     }
+    .rules {
+      display: grid; gap: 6px;
+      align-content: center;
+      width: 100%; max-width: 540px; margin: 0 auto;
+    }
+    .rule-item {
+      display: grid;
+      grid-template-columns: 44px 1fr;
+      gap: 16px;
+      padding: 16px 0;
+      border-top: 1px solid var(--line);
+      align-items: baseline;
+    }
+    .rule-item:last-child { border-bottom: 1px solid var(--line); }
+    .rule-num {
+      font-family: var(--display); font-weight: 400; font-style: italic;
+      font-size: clamp(28px, 6vw, 40px);
+      color: var(--ink); line-height: 1;
+    }
+    .rule-text {
+      font-size: clamp(13px, 3.6vw, 15px);
+      color: var(--ink-soft); line-height: 1.65;
+    }
+    .rule-text .accent { color: var(--accent); font-weight: 500; }
+    .intro-foot {
+      text-align: center;
+      display: flex; flex-direction: column; align-items: center; gap: 12px;
+    }
+    .intro-foot .note {
+      font-size: 10px; letter-spacing: 0.2em;
+      color: var(--faint); text-transform: uppercase;
+    }
+
+    /* ===== 测试页 ===== */
+    .test-stage {
+      width: 100%; max-width: 540px;
+      display: flex; flex-direction: column;
+      align-items: center; justify-content: center;
+      gap: 12px; text-align: center;
+    }
+    .round-label {
+     font-size: 10.5px; letter-spacing: 0.3em;
+      color: var(--muted); text-transform: uppercase;
+    }
+    .round-dots { display: flex; gap: 9px; margin-top: 4px; }
+    .round-dot {
+      width: 6px; height: 6px; border-radius: 50%;
+      background: var(--line);
+      transition: background 0.4s ease, transform 0.4s ease;
+    }
+    .round-dot.active { background: var(--ink); transform: scale(1.4); }
+    .round-dot.done { background: var(--accent); }
+    .target-block {
+      display: flex; align-items: flex-end; gap: 6px;
+      justify-content: center;
+      margin: 18px 0 8px;
+    }
+    .target-num {
+      font-family: var(--display); font-weight: 700;
+      font-size: clamp(96px, 32vw, 168px);
+      line-height: 0.85; letter-spacing: -0.04em;
+      color: var(--ink);
+    }
+    .target-unit {
+      font-family: var(--serif); font-weight: 400;
+      font-size: clamp(20px, 5vw, 28px);
+      color: var(--muted); padding-bottom: clamp(14px, 4vw, 24px);
+    }
+    .test-hint-top {
+      font-size: 11px; color: var(--muted);
+      letter-spacing: 0.2em; text-transform: uppercase;
+      max-width: 320px; margin-bottom: 12px;
+    }
+    .test-ui { transition: opacity 0.6s ease; }
+    /* 计时中提示：屏幕中央偏下、加粗、无呼吸动效 */
+    .tap-zone-hint {
+      position: absolute;
+      top: 50%; left: 50%;
+      transform: translate(-50%, -50%);
+      width: calc(100% - 48px);
+      max-width: 480px;
+      text-align: center;
+      opacity: 0;
+      transition: opacity 0.6s ease;
+      pointer-events: none;
+    }
+    .tap-zone-hint.show { opacity: 1; }
+    .tap-zone-hint .tap-title {
+      font-family: var(--serif); font-weight: 900;
+      font-size: clamp(20px, 5.5vw, 26px);
+      color: var(--ink); letter-spacing: 0.04em;
+      line-height: 1.35;
+    }
+    .tap-zone-hint .tap-bar {
+      width: 36px; height: 2px;
+      background: var(--ink);
+      margin: 14px auto 12px;
+    }
+    .tap-zone-hint .tap-sub {
+      font-size: 11px; color: var(--muted);
+      letter-spacing: 0.28em; text-transform: uppercase;
+    }
+
+    /* ===== 反馈页 ===== */
+    .fb-stage {
+      width: 100%; max-width: 520px; text-align: center;
+      display: flex; flex-direction: column; align-items: center; gap: 10px;
+    }
+    .fb-elapsed {
+      font-family: var(--display); font-weight: 700;
+      font-size: clamp(72px, 22vw, 120px);
+      line-height: 0.9; letter-spacing: -0.03em;
+      margin: 14px 0;
+    }
+    .fb-elapsed .unit {
+      font-family: var(--serif); font-weight: 400;
+      font-size: 0.3em; color: var(--muted);
+      margin-left: 6px; vertical-align: super;
+    }
+    .fb-detail {
+      font-size: clamp(12.5px, 3.4vw, 15px);
+      color: var(--muted); letter-spacing: 0.04em;
+    }
+    .fb-percent {
+      font-family: var(--display); font-style: italic;
+      font-size: clamp(20px, 5.4vw, 28px);
+      color: var(--accent); margin-top: 4px;
+    }
+    .fb-comment {
+      font-family: var(--serif);
+      font-size: clamp(13px, 3.4vw, 16px);
+      color: var(--ink-soft); margin-top: 10px;
+      max-width: 360px; line-height: 1.7;
+    }
+
+    /* ===== 结果页（手机：纵向单屏 / 桌面：横向双列）===== */
+    #page-result { padding: 0; align-items: center; justify-content: center; }
+    .result-stage {
+      width: 100%; height: 100%;
+      max-width: 1240px;
+      display: grid;
+      grid-template-columns: 1fr;
+      grid-template-rows: auto 1fr;
+      gap: 14px;
+      padding: 22px 20px 48px;
+      align-items: start;
+      background: var(--bg);
+      position: relative;
+      overflow: hidden;
+    }
+    /* 手机：右列（人物）在上、左列（数据）在下，让粒子姓名一开场就居中显眼 */
+    .result-right { order: 1; }
+    .result-left { order: 2; }
+
+    .result-no {
+      font-family: var(--display); font-style: italic;
+      font-size: 28px; color: var(--ink);
+      line-height: 1; letter-spacing: -0.03em;
+    }
+    .result-no .small {
+      font-size: 0.36em; letter-spacing: 0.3em;
+      font-style: normal; font-family: var(--sans);
+      color: var(--muted); text-transform: uppercase;
+      vertical-align: super; margin-left: 6px;
+    }
+
+    .speed-label {
+      font-size: 10px; letter-spacing: 0.3em;
+      color: var(--muted); text-transform: uppercase;
+    }
+    .speed-block { display: flex; align-items: baseline; gap: 10px; flex-wrap: wrap; }
+    .speed-value {
+      font-family: var(--serif); font-weight: 900;
+      font-size: clamp(48px, 14vw, 72px);
+      line-height: 0.92; letter-spacing: -0.01em;
+    }
+    .speed-value.fast { color: var(--accent); }
+    .speed-value .pct {
+      font-family: var(--display); font-style: italic;
+      font-weight: 400; font-size: 0.45em;
+      color: var(--muted); margin-left: 4px;
+    }
+    .equiv-list {
+      display: grid; gap: 4px;
+      font-size: clamp(11.5px, 3.2vw, 13.5px);
+      color: var(--ink-soft); line-height: 1.6;
+      margin-top: 6px;
+    }
+    .equiv-list .num {
+      font-family: var(--display); font-weight: 700;
+      color: var(--accent); margin: 0 2px;
+    }
+    .trend-block { padding-top: 6px; }
+    .trend-visual {
+      display: flex; align-items: flex-end;
+      gap: clamp(10px, 3vw, 22px);
+      height: clamp(60px, 12vw, 90px);
+      margin: 8px 0 14px;
+    }
+    .trend-bar-wrap {
+      flex: 1; max-width: 60px;
+      display: flex; flex-direction: column;
+      align-items: center; gap: 8px;
+      height: 100%; justify-content: flex-end;
+    }
+    .trend-bar {
+      width: 100%; max-width: 14px; min-height: 4px;
+      background: var(--ink); border-radius: 2px;
+      transition: height 0.8s cubic-bezier(0.2, 0.8, 0.2, 1);
+    }
+    .trend-bar.pos { background: var(--faint); }
+    .trend-bar-label {
+      font-size: 9px; letter-spacing: 0.16em;
+      color: var(--muted); text-transform: uppercase; white-space: nowrap;
+    }
+    .trend-type {
+      font-family: var(--serif); font-weight: 700;
+      font-size: clamp(15px, 4vw, 19px);
+      color: var(--ink);
+    }
+    .trend-desc {
+      font-size: clamp(11px, 3vw, 13px);
+      color: var(--muted); line-height: 1.6;
+      margin-top: 4px; max-width: 320px;
+    }
+
+    /* 右列：人物 */
+    .result-right {
+      display: flex; flex-direction: column;
+      gap: 10px; align-items: center; text-align: center;
+    }
+    .result-right .kicker { margin-bottom: 2px; }
+
+    /* 钟表样式头像框（SVG 版本，精准对齐） */
+    .clock-frame {
+      position: relative;
+      width: clamp(160px, 40vw, 200px);
+      aspect-ratio: 1;
+      flex-shrink: 0;
+    }
+    .clock-frame svg.clock-svg {
+      position: absolute; inset: 0;
+      width: 100%; height: 100%;
+      overflow: visible;
+      z-index: 1;
+    }
+    .clock-frame svg.clock-svg .ring-outer { fill: none; stroke: var(--ink); stroke-width: 1; }
+    .clock-frame svg.clock-svg .ring-inner { fill: none; stroke: var(--line); stroke-width: 1; }
+    .clock-frame svg.clock-svg .tick-major { stroke: var(--ink); stroke-width: 1; }
+    .clock-frame svg.clock-svg .tick-minor { stroke: var(--faint); stroke-width: 1; }
+    .clock-frame svg.clock-svg .clock-num {
+      font-family: var(--display); font-style: italic;
+      font-size: 9px; fill: var(--muted);
+    }
+    .clock-frame svg.clock-svg .clock-hand {
+      stroke: var(--accent); stroke-width: 2; stroke-linecap: round;
+      transform-origin: 100px 100px;
+      transition: transform 1.2s cubic-bezier(0.2, 0.8, 0.2, 1);
+      transform: rotate(0deg);
+    }
+    .clock-frame svg.clock-svg .clock-center { fill: var(--ink); }
+    .clock-frame .portrait-disc {
+      position: absolute;
+      inset: 18%;
+      border-radius: 50%;
+      overflow: hidden;
+      background: var(--bg-deep);
+      display: flex; align-items: center; justify-content: center;
+      z-index: 0;
+    }
+    .clock-frame .portrait-disc img {
+      width: 100%; height: 100%;
+      object-fit: cover;
+      filter: grayscale(1) contrast(1.12);
+      display: block;
+    }
+    .clock-frame .portrait-disc .portrait-placeholder {
+      font-family: var(--display); font-style: italic;
+      font-size: clamp(38px, 9vw, 58px);
+      color: var(--faint);
+    }
+
+    /* 粒子姓名 canvas */
+    #name-canvas {
+      width: 100%;
+      max-width: 360px;
+      height: clamp(64px, 16vw, 96px);
+      display: block;
+    }
     .char-tag {
-      font-size: 13px; color: var(--text-secondary); margin: 4px 0 16px;
+      font-family: var(--display); font-style: italic;
+      font-size: clamp(14px, 3.8vw, 18px);
+      color: var(--accent); letter-spacing: 0.02em;
     }
     .char-desc {
-      font-size: 14px; color: var(--text-secondary);
-      line-height: 1.8; text-align: left;
-      max-width: 320px; margin: 0 auto;
+      font-family: var(--serif);
+      font-size: clamp(12px, 3.2vw, 14px);
+      color: var(--ink-soft); line-height: 1.8;
+      text-align: left;
+      max-width: 340px;
+      border-top: 1px solid var(--line);
+      padding-top: 12px; margin-top: 4px;
     }
 
-    /* 粒子聚合文字画布 */
-    #char-text-canvas {
-      width: 280px; height: 80px; margin: 24px auto 0;
-    }
-
-    /* 底部按钮 */
     .result-actions {
-      display: flex; gap: 12px; margin-top: 40px; width: 100%;
-      max-width: 320px;
+      display: flex; gap: 8px;
+      margin-top: 10px;
+      width: 100%; max-width: 340px;
     }
-    .result-actions .btn { flex: 1; text-align: center; padding: 14px; }
-
-    /* 水印 */
-    .watermark {
-      font-size: 10px; color: var(--text-muted);
-      margin-top: 32px; letter-spacing: 1px;
+    .result-actions .btn {
+      flex: 1; padding: 12px 6px;
+      font-size: 10.5px; letter-spacing: 0.18em;
+    }
+    .result-watermark {
+      position: absolute;
+      bottom: 12px; left: 0; right: 0;
+      text-align: center;
+      font-size: 9px; color: var(--faint);
+      letter-spacing: 0.32em;
+      text-transform: uppercase;
+      pointer-events: none;
     }
 
-    /* PC端适配 */
-    @media (min-width: 768px) {
-      .page { padding: 60px; }
-      .result-card { padding: 80px 48px 60px; }
+    /* 桌面：恢复左右双列、加大尺寸 */
+    @media (min-width: 820px) {
+      .result-stage {
+        grid-template-columns: 1.05fr 1fr;
+        grid-template-rows: 1fr;
+        gap: 56px;
+        padding: 64px 72px;
+        align-items: center;
+        align-content: center;
+      }
+      .result-left { order: 1; gap: 22px; display: flex; flex-direction: column; justify-content: center; }
+      .result-right { order: 2; gap: 16px; display: flex; flex-direction: column; align-items: flex-start; justify-content: center; }
+      .result-no {font-size: 48px; }
+      .speed-value { font-size: clamp(72px, 8vw, 104px); }
+      .equiv-list { font-size: 14px; }
+      .clock-frame { width: clamp(180px, 22vw, 220px); }
+      #name-canvas { height: clamp(80px, 9vw, 96px); }
+      .char-desc { font-size: 13.5px; }
+      .trend-visual { height: clamp(60px, 8vw, 84px); }
+    }
+
+    /* 平板中间档 */
+    @media (min-width: 720px) and (max-width: 819px) {
+      .result-stage { padding: 36px 48px 56px; gap: 22px; }
+      .clock-frame { width: clamp(170px, 28vw, 200px); }
+      .speed-value { font-size: clamp(60px, 10vw, 80px); }
+    }
+
+    /* 矮屏（横屏手机/小笔记本）压缩 */
+    @media (max-height: 720px) and (min-width: 820px) {
+      .result-stage { padding: 28px 48px; }
+      .clock-frame { width: clamp(150px, 18vw, 180px); }
+      .speed-value { font-size: clamp(60px, 7vw, 80px); }
+      .trend-visual { height: 56px; margin: 6px 0 12px; }
+    }
+
+    /* 截模式：去掉操作按钮 */
+    .capture-mode .result-actions { visibility: hidden; }
+
+    .toast {
+      position: fixed;
+      bottom: 32px; left: 50%;
+      transform: translateX(-50%) translateY(20px);
+      background: var(--ink); color: #fff;
+      padding: 11px 22px;
+      font-size: 11px; letter-spacing: 0.18em;
+      text-transform: uppercase;
+      opacity: 0; pointer-events: none;
+      transition: all 0.4s ease;
+      z-index: 100;
+      max-width: calc(100% - 32px);
+      text-align: center;
+    }
+    .toast.show {
+      opacity: 1;
+      transform: translateX(-50%) translateY(0);
     }
   </style>
 </head>
 <body>
   <canvas id="anim-canvas"></canvas>
 
-  <!-- 落地页 -->
+  <!-- ===== Page 1: 落地页 ===== -->
   <div id="page-landing" class="page active">
-    <div class="hero-number">?</div>
-    <div class="label">Time Perception Lab</div>
-    <h1 class="title-lg">你的内在时钟<br>偏了多少</h1>
-    <p class="subtitle">三轮感知测试，校准你与世界的时差</p>
-    <button class="btn" onclick="goToPage('intro')">开始校准</button>
+    <div class="cover-frame">
+      <div class="cover-top">
+        <div class="left">
+          <div class="lab-cn">时间感校准实验室</div>
+          <div class="lab-en">Time Perception Lab</div>
+        </div>
+        <div class="cover-meta">
+          ISSUE 01<br>
+          2026 · 心理感知系列
+        </div>
+      </div>
+
+      <div class="cover-center">
+        <div class="cover-no-tag">No.01</div>
+        <div class="cover-en">An experiment on <em>inner time</em></div>
+        <h1 class="cover-headline">
+          你的内在时钟<br>
+          偏了 <em>多少</em>？
+        </h1>
+        <div class="hairline"></div>
+        <p class="cover-sub">
+          三轮时长不一的感知测试，校准你与世界的时差。<br>
+          测完之后，会有一位历史人物在远处等你。
+        </p>
+      </div>
+
+      <div class="cover-bottom">
+        <div class="cover-tags">
+          <span class="cover-tag">3 Rounds</span>
+          <span class="cover-tag">~ 2 min</span>
+          <span class="cover-tag">9 Personalities</span>
+        </div>
+        <button class="btn" onclick="goToPage('intro')">开始校准 →</button>
+      </div>
+    </div>
+    <div class="cover-bg-no">01</div>
   </div>
 
-  <!-- 说明页 -->
+  <!-- ===== Page 2: 实验规则 ===== -->
   <div id="page-intro" class="page">
-    <div class="label">How It Works</div>
-    <h2 class="title-lg" style="font-size: clamp(24px, 6vw, 36px);">实验规则</h2>
-    <ul class="rules">
-      <li><span class="num">1</span><span>屏幕会给出目标秒数，用直觉感受时间流逝</span></li>
-      <li><span class="num">2</span><span>当你觉得"到了"，点击屏幕任意位置</span></li>
-      <li><span class="num">3</span><span>三轮不同时长，最终揭晓你的时间人格</span></li>
-    </ul>
-    <p class="subtitle" style="font-size:12px; color:var(--text-muted);">建议佩戴耳机 · 保持安静</p>
-    <button class="btn" onclick="startTest()">准备好了</button>
+    <div class="intro-frame">
+      <div class="intro-head">
+        <div class="kicker">How It Works</div>
+        <h2>实验规则</h2>
+      </div>
+
+      <div class="rules">
+        <div class="rule-item">
+          <div class="rule-num">01</div>
+          <div class="rule-text">屏幕给出 <span class="accent">目标秒数</span>，凭直觉感受时间流逝</div>
+        </div>
+        <div class="rule-item">
+          <div class="rule-num">02</div>
+          <div class="rule-text">当你觉得"到了"，<span class="accent">点击屏幕任意位置</span></div>
+        </div>
+        <div class="rule-item">
+          <div class="rule-num">03</div>
+          <div class="rule-text">三轮不同时长，最终揭晓你的 <span class="accent">时间人格</span></div>
+        </div>
+      </div>
+
+      <div class="intro-foot">
+        <div class="note">建议佩戴耳机 · 保持安静</div>
+        <button class="btn" onclick="startTest()">准备好了 →</button>
+      </div>
+    </div>
   </div>
 
-  <!-- 测试页 -->
+  <!-- ===== Page 3: 测试 ===== -->
   <div id="page-test" class="page">
-    <div class="test-ui" id="test-ui">
-      <div class="round-num" id="round-label">Round 1 / 3</div>
-      <div class="target-seconds" id="target-time">12</div>
-      <div class="target-unit">秒</div>
+    <div class="test-stage test-ui" id="test-ui">
+      <div class="round-label" id="round-label">Round 1 / 3</div>
+      <div class="round-dots" id="round-dots">
+        <span class="round-dot active"></span>
+        <span class="round-dot"></span>
+        <span class="round-dot"></span>
+      </div>
+      <div class="test-hint-top">用直觉感受以下秒数</div>
+      <div class="target-block">
+        <span class="target-num" id="target-time">12</span>
+        <span class="target-unit">秒</span>
+      </div>
       <button class="btn" id="btn-ready" onclick="beginTiming()">我准备好了</button>
     </div>
-    <div class="tap-zone-hint" id="tap-hint">轻触屏幕任意位置</div>
+    <div class="tap-zone-hint" id="tap-hint">
+      <div class="tap-title">轻触屏幕任意位置<br>结束计时</div>
+      <div class="tap-bar"></div>
+      <div class="tap-sub">Tap anywhere</div>
+    </div>
   </div>
 
-  <!-- 反馈页 -->
+  <!-- ===== Page 4: 反馈 ===== -->
   <div id="page-feedback" class="page">
-    <div class="feedback-content">
-      <div class="label" id="fb-round">Round 1</div>
-      <div class="elapsed" id="fb-value">10.3</div>
-      <div class="diff-info" id="fb-detail">目标 12 秒 · 偏差 -1.7 秒</div>
-      <div class="diff-info" id="fb-percent">快了 14%</div>
-      <div class="comment" id="fb-comment">你的时间跑得比现实快一拍</div>
-      <button class="btn" id="btn-next" onclick="nextRound()">下一轮</button>
+    <div class="fb-stage">
+      <div class="kicker" id="fb-round">Round 1 of 3</div>
+      <div class="fb-elapsed" id="fb-value">10.3<span class="unit">s</span></div>
+      <div class="fb-detail" id="fb-detail">目标 12 秒 · 偏差 −1.7 秒</div>
+      <div class="fb-percent" id="fb-percent">快了 14%</div>
+      <div class="fb-comment" id="fb-comment">你的时间跑得比现实快一拍</div>
+      <button class="btn" id="btn-next" style="margin-top: 28px;" onclick="nextRound()">下一轮 →</button>
     </div>
   </div>
 
-  <!-- 结果页 -->
+  <!-- ===== Page 5: 结果 ===== -->
   <div id="page-result" class="page">
-    <div class="result-card" id="result-card">
-      <div class="label">Your Time Perception</div>
-      <div class="result-speed" id="res-speed">快 11<span class="unit">%</span></div>
-      <div class="result-equiv" id="res-equiv">你的体感 1 小时 = 现实 53 分钟</div>
-      <div class="result-equiv" id="res-daily">你每天比别人多"活" 53 分钟</div>
-
-      <div class="divider"></div>
-
-      <div class="trend-section">
-        <div class="label">Trend</div>
-        <div class="trend-visual" id="trend-visual"></div>
-        <div class="trend-type" id="trend-label"></div>
-        <div class="trend-desc" id="trend-desc"></div>
-      </div>
-
-      <div class="divider"></div>
-
-      <div class="character-section">
-        <div class="label">Time Personality</div>
-        <canvas id="char-text-canvas" width="280" height="80"></canvas>
-        <div class="char-portrait" id="char-portrait">
-          <span class="placeholder">照片</span>
+    <div class="result-stage" id="result-card">
+      <!-- 右列：人物（手机端优先显示） -->
+      <div class="result-right">
+        <div class="kicker">Your Time Personality</div>
+        <canvas id="name-canvas"></canvas>
+        <div class="clock-frame" id="clock-frame">
+          <!-- 头像盘（底层） -->
+          <div class="portrait-disc" id="char-portrait">
+            <div class="portrait-placeholder" id="char-initial">N</div>
+          </div>
+          <!-- 钟表 SVG（上层）：环、刻度、数字、指针、中心点 -->
+          <svg class="clock-svg" viewBox="0 0 200 200" preserveAspectRatio="xMidYMid meet" aria-hidden="true">
+            <circle class="ring-outer" cx="100" cy="100" r="99"></circle>
+            <circle class="ring-inner" cx="100" cy="100" r="92"></circle>
+            <g id="clock-ticks-svg"></g>
+            <g id="clock-nums-svg"></g>
+            <line class="clock-hand" id="clock-hand"
+                  x1="100" y1="100" x2="100" y2="36"></line>
+            <circle class="clock-center" cx="100" cy="100" r="4"></circle>
+          </svg>
         </div>
-        <div class="char-name" id="char-name">拿破仑</div>
         <div class="char-tag" id="char-tag">「精密加速者」</div>
-        <div class="char-desc" id="char-desc"></div>
+        <p class="char-desc" id="char-desc"></p>
       </div>
 
-      <div class="result-actions">
-        <button class="btn btn--ghost" onclick="restart()">再测一次</button>
-        <button class="btn" onclick="shareResult()">保存结果</button>
+      <!-- 左列：数据 -->
+      <div class="result-left">
+        <div class="result-no">
+          NO.<span id="char-no">01</span>
+          <span class="small">Profile</span>
+        </div>
+        <div>
+          <div class="speed-label">Your Time Flow</div>
+          <div class="speed-block">
+            <div class="speed-value fast" id="res-speed">快 11<span class="pct">%</span></div>
+          </div>
+        </div>
+        <div class="equiv-list">
+          <div>你的体感 <span class="num" id="eq-hour">53</span> 分钟 = 现实 1 小时</div>
+          <div>你每天比别人 <span id="eq-direction">多</span>"活" <span class="num" id="eq-daily">53</span> 分钟</div>
+        </div>
+
+        <div class="trend-block">
+          <div class="speed-label">Three-Round Trend</div>
+          <div class="trend-visual" id="trend-visual"></div>
+          <div class="trend-type" id="trend-label">逐渐校准型</div>
+          <div class="trend-desc" id="trend-desc">越来越准，你的大脑在实时学习</div>
+        </div>
+
+        <div class="result-actions">
+         <button class="btn btn--ghost" onclick="restart()">再测一次</button>
+          <button class="btn" onclick="saveImage()">保存图片</button>
+        </div>
       </div>
-      <div class="watermark">Time Perception Lab · 时间感校准实验室</div>
+
+      <div class="result-watermark">时间感校准实验室 · Time Perception Lab</div>
     </div>
   </div>
+
+  <div class="toast" id="toast">已保存到下载文件夹</div>
 
   <script src="app.js"></script>
 </body>
